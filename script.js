@@ -15,6 +15,7 @@ const products = [
     badge: 'Cooling Tech',
     description: 'Soft stretch jersey with advanced airflow and moisture-management for all-day comfort.',
     image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80',
+    freeShipping: true,
     colors: ['cooling', 'black', 'steel'],
     stock: 24
   },
@@ -39,6 +40,7 @@ const products = [
     badge: 'Lounge',
     description: 'Soft stretch lounge pants built for living room comfort and easy movement.',
     image: 'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=1200&q=80',
+    freeShipping: false,
     colors: ['steel', 'black'],
     stock: 12
   },
@@ -51,6 +53,7 @@ const products = [
     badge: 'Everyday',
     description: 'Statement tee with soft cotton feel and modern graphic finish.',
     image: 'https://images.unsplash.com/photo-1530845649455-077f371e88d9?auto=format&fit=crop&w=1200&q=80',
+    flashDeal: true,
     colors: ['cooling', 'black', 'steel'],
     stock: 30
   }
@@ -217,6 +220,29 @@ function addToCartItem(product, variant, quantity = 1) {
   updateCartCount();
 }
 
+function animateAddToCart(imageUrl, startElement) {
+  const img = document.createElement('img');
+  img.src = imageUrl;
+  img.className = 'flying-img';
+  document.body.appendChild(img);
+  const startRect = startElement.getBoundingClientRect();
+  const cart = document.querySelector('.cart-float') || document.querySelector('.cart-button');
+  const endRect = cart ? cart.getBoundingClientRect() : { left: window.innerWidth - 60, top: window.innerHeight - 60 };
+  img.style.left = startRect.left + 'px';
+  img.style.top = startRect.top + 'px';
+  img.style.width = startRect.width + 'px';
+  img.style.height = startRect.height + 'px';
+  requestAnimationFrame(() => {
+    img.style.transform = `translate(${endRect.left - startRect.left}px, ${endRect.top - startRect.top}px) scale(0.2)`;
+    img.style.opacity = '0.8';
+  });
+  setTimeout(() => {
+    img.remove();
+    if (cart) cart.classList.add('pulse');
+    setTimeout(() => cart && cart.classList.remove('pulse'), 400);
+  }, 700);
+}
+
 function toggleWishlist(productId) {
   const wishlist = getWishlist();
   const index = wishlist.indexOf(productId);
@@ -320,11 +346,18 @@ function renderShopPage() {
     card.innerHTML = `
       <img class="product-card-image" src="${product.image}" alt="${product.name}" />
       <div class="product-card-body">
-        <span>${product.name}</span>
+        <div style="display:flex; justify-content:space-between; gap:8px; align-items:center">
+          <span>${product.name}</span>
+          <div style="display:flex; gap:6px">
+            ${product.freeShipping ? '<span class="promo">Free Shipping</span>' : ''}
+            ${product.flashDeal ? '<span class="promo deal">Flash</span>' : ''}
+          </div>
+        </div>
         <strong>${formatCurrency(product.price)}</strong>
         <span class="badge">${product.badge}</span>
         <div class="product-actions">
           <button class="button button-ghost product-view" data-id="${product.id}">View</button>
+          <button class="button button-primary add-to-cart" data-id="${product.id}">Add</button>
           <button class="button button-secondary wishlist-button" data-id="${product.id}">${wishlist.includes(product.id) ? 'Remove' : 'Save'}</button>
         </div>
       </div>
@@ -343,10 +376,28 @@ function renderShopPage() {
       toggleWishlist(button.dataset.id);
     });
   });
+
+  container.querySelectorAll('.add-to-cart').forEach((button) => {
+    button.addEventListener('click', (e) => {
+      const id = button.dataset.id;
+      const product = findProduct(id);
+      if (!product) return;
+      addToCartItem(product, 'Default', 1);
+      renderCartDrawer('drawer-items-shop', 'drawer-total-shop');
+      updateCartCount();
+      // animate
+      const imgEl = button.closest('.product-card')?.querySelector('img.product-card-image');
+      if (imgEl) animateAddToCart(imgEl.src, imgEl);
+    });
+  });
 }
 
 function setupShopPage() {
   if (!document.getElementById('shop-page')) return;
+
+  // Pre-fill search from query param
+  const q = getQueryParam('q');
+  if (q) document.getElementById('shop-search').value = decodeURIComponent(q);
 
   ['shop-search', 'filter-category', 'filter-fabric', 'filter-price'].forEach((id) => {
     document.getElementById(id)?.addEventListener('input', renderShopPage);
@@ -354,6 +405,18 @@ function setupShopPage() {
   });
 
   renderShopPage();
+}
+
+function bindGlobalSearch() {
+  document.querySelectorAll('#global-search').forEach((input) => {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = input.value.trim();
+        if (!val) return;
+        window.location.href = `shop.html?q=${encodeURIComponent(val)}`;
+      }
+    });
+  });
 }
 
 function renderAccountPage() {
@@ -701,6 +764,9 @@ function setupProductPage() {
     addToCartItem(product, `${selectedColor} / ${selectedSize}`);
     renderCartDrawer('drawer-items-2', 'drawer-total-2');
     updateCartCount();
+    // animate from main product image
+    const imgEl = document.getElementById('product-image');
+    if (imgEl && imgEl.tagName === 'IMG') animateAddToCart(imgEl.src, imgEl);
   });
 }
 
@@ -861,6 +927,7 @@ function init() {
   bindCartButtons();
   setupCartFromStorage();
   setupStoreCards();
+  bindGlobalSearch();
   setupShopPage();
   renderAccountPage();
   setupAdminPage();

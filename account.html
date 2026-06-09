@@ -117,6 +117,9 @@
           <a class="button button-primary" href="checkout.html">Checkout</a>
         </div>
       </div>
+      <div class="cart-float" role="button" aria-label="Open cart" onclick="(function(e){const btn=e.currentTarget; (typeof openCart==='function') && openCart(btn); })(event)">
+        🛒 <span class="cart-count">0</span>
+      </div>
     </div>
   </body>
 </html>

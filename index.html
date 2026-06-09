@@ -12,6 +12,9 @@
       <header class="site-header">
         <div class="header-inner">
           <a class="logo" href="index.html">njieza</a>
+          <div class="search-inline">
+            <input type="search" placeholder="Search products, brands, categories..." aria-label="Search" id="global-search" />
+          </div>
           <nav class="main-nav" aria-label="Primary navigation">
             <a href="index.html">Home</a>
             <a href="shop.html">Shop</a>
@@ -161,8 +164,8 @@
       <footer class="site-footer">
         <div class="footer-grid">
           <div>
-            <h3>Njieza</h3>
-            <p>Clean, functional clothing for everyday life.</p>
+
+          <div class="mini-cart-drawer hidden" id="mini-cart-1">
           </div>
           <div>
             <p><strong>Shop</strong></p>
@@ -178,6 +181,10 @@
           </div>
         </div>
       </footer>
+
+          <div class="cart-float" role="button" aria-label="Open cart" onclick="(function(e){const btn=e.currentTarget; (typeof openCart==='function') && openCart(btn); })(event)">
+            🛒 <span class="cart-count">0</span>
+          </div>
 
       <div class="mini-cart-drawer hidden" id="mini-cart">
         <div class="drawer-header">
