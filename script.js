@@ -13,6 +13,8 @@ const products = [
     category: 'tops',
     fabric: 'cooling',
     badge: 'Cooling Tech',
+    description: 'Soft stretch jersey with advanced airflow and moisture-management for all-day comfort.',
+    image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80',
     colors: ['cooling', 'black', 'steel'],
     stock: 24
   },
@@ -23,6 +25,8 @@ const products = [
     category: 'tops',
     fabric: 'thermal',
     badge: 'Thermal',
+    description: 'Insulated knit designed to trap warmth without adding bulk.',
+    image: 'https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=1200&q=80',
     colors: ['cooling', 'black'],
     stock: 18
   },
@@ -33,6 +37,8 @@ const products = [
     category: 'loungewear',
     fabric: 'cotton',
     badge: 'Lounge',
+    description: 'Soft stretch lounge pants built for living room comfort and easy movement.',
+    image: 'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=1200&q=80',
     colors: ['steel', 'black'],
     stock: 12
   },
@@ -43,6 +49,8 @@ const products = [
     category: 'tops',
     fabric: 'cotton',
     badge: 'Everyday',
+    description: 'Statement tee with soft cotton feel and modern graphic finish.',
+    image: 'https://images.unsplash.com/photo-1530845649455-077f371e88d9?auto=format&fit=crop&w=1200&q=80',
     colors: ['cooling', 'black', 'steel'],
     stock: 30
   }
@@ -216,6 +224,10 @@ function formatCurrency(value) {
   return `$${value.toFixed(2)}`;
 }
 
+function getQueryParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
 function renderShopPage() {
   const container = document.getElementById('shop-products');
   if (!container) return;
@@ -248,7 +260,7 @@ function renderShopPage() {
     const card = document.createElement('article');
     card.className = 'product-card';
     card.innerHTML = `
-      <div class="product-card-image">${product.badge}</div>
+      <img class="product-card-image" src="${product.image}" alt="${product.name}" />
       <div class="product-card-body">
         <span>${product.name}</span>
         <strong>${formatCurrency(product.price)}</strong>
@@ -264,7 +276,7 @@ function renderShopPage() {
 
   container.querySelectorAll('.product-view').forEach((button) => {
     button.addEventListener('click', () => {
-      window.location.href = 'product.html';
+      window.location.href = `product.html?id=${button.dataset.id}`;
     });
   });
 
@@ -476,34 +488,45 @@ function setupProductPage() {
   const hasProductPage = Boolean(document.getElementById('product-page') || document.getElementById('product-image'));
   if (!hasProductPage) return;
 
+  const productId = getQueryParam('id') || 'cooling-tee';
+  const product = findProduct(productId) || findProduct('cooling-tee');
+  if (!product) return;
+
   const colorButtons = document.querySelectorAll('#color-swatches .swatch, .thumbnail');
   const sizeButtons = document.querySelectorAll('#size-options .size-chip');
   const imageElement = document.getElementById('product-image');
+  const titleElement = document.getElementById('product-title');
+  const priceElement = document.getElementById('product-price');
+  const descriptionElement = document.getElementById('product-description');
+  const badgeElement = document.getElementById('product-badge');
   const recommendation = document.getElementById('size-recommendation');
   const recommendedSize = document.getElementById('recommended-size');
   const addToCartButton = document.getElementById('add-to-cart');
 
-  let selectedColor = 'cooling';
+  let selectedColor = product.colors[0] || 'cooling';
   let selectedSize = 'M';
 
   function updateProductVisual() {
     if (!imageElement) return;
-    const colorLabel = {
-      cooling: 'Cool White',
-      black: 'Jet Black',
-      steel: 'Charcoal'
-    }[selectedColor];
-    imageElement.textContent = colorLabel;
+    imageElement.src = product.image;
+    imageElement.alt = product.name;
   }
 
+  titleElement.textContent = product.name;
+  document.title = `${product.name} — Njieza`;
+  priceElement.textContent = formatCurrency(product.price);
+  descriptionElement.textContent = product.description;
+  badgeElement.textContent = product.badge;
+  updateProductVisual();
+
   colorButtons.forEach((button) => {
+    const color = button.dataset.color;
+    if (color === selectedColor) button.classList.add('selected');
     button.addEventListener('click', () => {
-      const color = button.dataset.color;
       if (!color) return;
       selectedColor = color;
       document.querySelectorAll('.swatch, .thumbnail').forEach((btn) => btn.classList.remove('selected'));
       button.classList.add('selected');
-      updateProductVisual();
     });
   });
 
@@ -543,14 +566,40 @@ function setupProductPage() {
   });
 
   addToCartButton?.addEventListener('click', () => {
-    const product = findProduct('cooling-tee');
-    if (!product) return;
     addToCartItem(product, `${selectedColor} / ${selectedSize}`);
     renderCartDrawer('drawer-items-2', 'drawer-total-2');
     updateCartCount();
   });
+}
 
-  updateProductVisual();
+function renderCheckoutSummary() {
+  const summaryContainer = document.getElementById('checkout-cart-summary');
+  const totalContainer = document.getElementById('checkout-total');
+  const orderRows = document.getElementById('checkout-order-rows');
+  if (!summaryContainer || !totalContainer || !orderRows) return;
+
+  const cart = getCart();
+  if (cart.length === 0) {
+    summaryContainer.innerHTML = '<p class="empty-state">Your cart is empty.</p>';
+    orderRows.innerHTML = '<div class="order-row total"><strong>Total</strong><strong>$0.00</strong></div>';
+    return;
+  }
+
+  summaryContainer.innerHTML = cart
+    .map(
+      (item) => `<div class="checkout-item"><span>${item.name}</span><strong>${formatCurrency(item.price * item.quantity)}</strong></div>`
+    )
+    .join('');
+
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  orderRows.innerHTML = `
+    ${cart
+      .map((item) => `<div class="order-row"><span>${item.name}</span><span>${formatCurrency(item.price * item.quantity)}</span></div>`)
+      .join('')}
+    <div class="order-row"><span>Pickup handling</span><span>$0.00</span></div>
+    <div class="order-row total"><strong>Total</strong><strong>${formatCurrency(subtotal)}</strong></div>
+  `;
+  totalContainer.textContent = formatCurrency(subtotal);
 }
 
 function setupCheckoutPage() {
@@ -598,6 +647,7 @@ function setupCheckoutPage() {
     setCart([]);
     updateCartCount();
     renderCartDrawer('drawer-items-3', 'drawer-total-3');
+    renderCheckoutSummary();
     dialog?.classList.remove('hidden');
   });
 
@@ -612,6 +662,8 @@ function setupCheckoutPage() {
       });
     }
   });
+
+  renderCheckoutSummary();
 }
 
 function setupCartFromStorage() {
