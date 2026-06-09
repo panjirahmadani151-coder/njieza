@@ -54,40 +54,54 @@
 
         <section class="filters-section">
           <div class="filters-grid">
-            <label>
-              Search
-              <input type="search" id="shop-search" placeholder="Search products, fabric, style" />
-            </label>
-            <label>
-              Category
-              <select id="filter-category">
-                <option value="all">All</option>
-                <option value="tops">Tops</option>
-                <option value="bottoms">Bottoms</option>
-                <option value="outerwear">Outerwear</option>
-                <option value="innerwear">Innerwear</option>
-                <option value="loungewear">Loungewear</option>
-              </select>
-            </label>
-            <label>
-              Fabric
-              <select id="filter-fabric">
-                <option value="all">All</option>
-                <option value="cooling">Cooling Tech</option>
-                <option value="thermal">Thermal</option>
-                <option value="cotton">Cotton</option>
-                <option value="linen">Linen</option>
-              </select>
-            </label>
-            <label>
-              Price range
-              <select id="filter-price">
-                <option value="all">All</option>
-                <option value="0-30">Under $30</option>
-                <option value="30-60">$30–$60</option>
-                <option value="60-100">$60–$100</option>
-              </select>
-            </label>
+            <aside class="filters-sidebar">
+              <div class="filter-block">
+                <label for="shop-search">Search</label>
+                <input type="search" id="shop-search" placeholder="Search products, fabric, style" />
+              </div>
+              <div class="filter-block">
+                <label for="filter-category">Category</label>
+                <select id="filter-category">
+                  <option value="all">All</option>
+                  <option value="tops">Tops</option>
+                  <option value="bottoms">Bottoms</option>
+                  <option value="outerwear">Outerwear</option>
+                  <option value="innerwear">Innerwear</option>
+                  <option value="loungewear">Loungewear</option>
+                </select>
+              </div>
+              <div class="filter-block">
+                <label for="filter-fabric">Fabric</label>
+                <select id="filter-fabric">
+                  <option value="all">All</option>
+                  <option value="cooling">Cooling Tech</option>
+                  <option value="thermal">Thermal</option>
+                  <option value="cotton">Cotton</option>
+                  <option value="linen">Linen</option>
+                </select>
+              </div>
+              <div class="filter-block">
+                <label for="filter-price">Price range</label>
+                <select id="filter-price">
+                  <option value="all">All</option>
+                  <option value="0-30">Under $30</option>
+                  <option value="30-60">$30–$60</option>
+                  <option value="60-100">$60–$100</option>
+                </select>
+              </div>
+            </aside>
+            <div class="filters-controls">
+              <div class="filters-top">
+                <label class="mobile-filter-toggle"><button class="button button-ghost" id="toggle-filters">Filters</button></label>
+                <label class="sort-select">Sort
+                  <select id="sort-by">
+                    <option value="relevance">Relevance</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                  </select>
+                </label>
+              </div>
+            </div>
           </div>
         </section>
 

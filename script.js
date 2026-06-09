@@ -158,14 +158,83 @@ function renderCartDrawer(itemsId, totalId) {
   }
 
   let total = 0;
-  items.forEach((item) => {
+  items.forEach((item, idx) => {
     const row = document.createElement('div');
     row.className = 'drawer-item';
-    row.innerHTML = `<div><strong>${item.name}</strong><p>${item.variant}</p></div><div>$${(item.price * item.quantity).toFixed(2)}</div>`;
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <div style="flex:1">
+        <strong>${item.name}</strong>
+        <div class="drawer-variant">${item.variant || ''}</div>
+        <div class="drawer-qty-controls">
+          <button class="icon-button qty-decrease" data-idx="${idx}">-</button>
+          <input type="number" class="qty-input" data-idx="${idx}" value="${item.quantity}" min="1" style="width:56px" />
+          <button class="icon-button qty-increase" data-idx="${idx}">+</button>
+          <button class="icon-button remove-item" data-idx="${idx}">Remove</button>
+        </div>
+      </div>
+      <div style="margin-left:12px">${formatCurrency(item.price * item.quantity)}</div>
+    `;
     container.appendChild(row);
     total += item.price * item.quantity;
   });
+
+  // bind qty and remove handlers
+  container.querySelectorAll('.qty-decrease, .qty-increase, .remove-item').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const idx = Number(btn.dataset.idx);
+      if (btn.classList.contains('qty-decrease')) updateCartItemQuantityByIndex(idx, -1);
+      if (btn.classList.contains('qty-increase')) updateCartItemQuantityByIndex(idx, 1);
+      if (btn.classList.contains('remove-item')) removeCartItemByIndex(idx);
+    });
+  });
+  container.querySelectorAll('.qty-input').forEach((input) => {
+    input.addEventListener('change', (e) => {
+      const idx = Number(e.currentTarget.dataset.idx);
+      const val = Number(e.currentTarget.value) || 1;
+      setCartItemQuantityByIndex(idx, val);
+    });
+  });
+
   totalLabel.textContent = `$${total.toFixed(2)}`;
+}
+
+function updateCartItemQuantityByIndex(idx, delta) {
+  const cart = getCart();
+  if (!cart[idx]) return;
+  cart[idx].quantity = Math.max(1, (cart[idx].quantity || 1) + delta);
+  setCart(cart);
+  // refresh drawers
+  ['drawer-items','drawer-items-shop','drawer-items-account','drawer-items-2'].forEach((id) => {
+    const t = id === 'drawer-items' ? 'drawer-total' : id.replace('items','total');
+    renderCartDrawer(id, t);
+  });
+  updateCartCount();
+}
+
+function setCartItemQuantityByIndex(idx, qty) {
+  const cart = getCart();
+  if (!cart[idx]) return;
+  cart[idx].quantity = Math.max(1, qty);
+  setCart(cart);
+  ['drawer-items','drawer-items-shop','drawer-items-account','drawer-items-2'].forEach((id) => {
+    const t = id === 'drawer-items' ? 'drawer-total' : id.replace('items','total');
+    renderCartDrawer(id, t);
+  });
+  updateCartCount();
+}
+
+function removeCartItemByIndex(idx) {
+  const cart = getCart();
+  if (!cart[idx]) return;
+  cart.splice(idx, 1);
+  setCart(cart);
+  ['drawer-items','drawer-items-shop','drawer-items-account','drawer-items-2'].forEach((id) => {
+    const t = id === 'drawer-items' ? 'drawer-total' : id.replace('items','total');
+    renderCartDrawer(id, t);
+  });
+  updateCartCount();
 }
 
 function openCart(button) {
@@ -334,6 +403,11 @@ function renderShopPage() {
     return matchesSearch && matchesCategory && matchesFabric && matchesPrice;
   });
 
+  // sorting
+  const sortBy = document.getElementById('sort-by')?.value || 'relevance';
+  if (sortBy === 'price-asc') productsList.sort((a, b) => a.price - b.price);
+  if (sortBy === 'price-desc') productsList.sort((a, b) => b.price - a.price);
+
   container.innerHTML = '';
   if (productsList.length === 0) {
     container.innerHTML = '<p class="empty-state">No products match your filters.</p>';
@@ -402,6 +476,10 @@ function setupShopPage() {
   ['shop-search', 'filter-category', 'filter-fabric', 'filter-price'].forEach((id) => {
     document.getElementById(id)?.addEventListener('input', renderShopPage);
     document.getElementById(id)?.addEventListener('change', renderShopPage);
+  });
+  document.getElementById('sort-by')?.addEventListener('change', renderShopPage);
+  document.getElementById('toggle-filters')?.addEventListener('click', () => {
+    document.querySelector('.filters-sidebar')?.classList.toggle('hidden');
   });
 
   renderShopPage();
@@ -751,12 +829,36 @@ function setupProductPage() {
     imageElement.alt = product.name;
   }
 
+  // gallery thumbs
+  const galleryMain = document.getElementById('gallery-main-image');
+  const galleryThumbs = document.getElementById('gallery-thumbs');
+  function renderGallery() {
+    if (galleryMain) {
+      galleryMain.src = product.image;
+      galleryMain.alt = product.name;
+    }
+    if (!galleryThumbs) return;
+    const pics = [product.image, product.image, product.image];
+    galleryThumbs.innerHTML = pics
+      .map((src, i) => `<img src="${src}" class="${i===0? 'selected':''}" data-src="${src}" alt="thumb-${i}"/>`)
+      .join('');
+    galleryThumbs.querySelectorAll('img').forEach((img) => {
+      img.addEventListener('click', () => {
+        const src = img.dataset.src;
+        if (galleryMain) galleryMain.src = src;
+        galleryThumbs.querySelectorAll('img').forEach((t) => t.classList.remove('selected'));
+        img.classList.add('selected');
+      });
+    });
+  }
+
   titleElement.textContent = product.name;
   document.title = `${product.name} — Njieza`;
   priceElement.textContent = formatCurrency(product.price);
   descriptionElement.textContent = product.description;
   badgeElement.textContent = product.badge;
   updateProductVisual();
+  renderGallery();
 
   colorButtons.forEach((button) => {
     const color = button.dataset.color;
@@ -805,7 +907,10 @@ function setupProductPage() {
   });
 
   addToCartButton?.addEventListener('click', () => {
-    addToCartItem(product, `${selectedColor} / ${selectedSize}`);
+    const qty = Number(document.getElementById('p-qty')?.value) || 1;
+    const selSize = document.getElementById('variant-size')?.value || selectedSize;
+    const selColor = document.getElementById('variant-color')?.value || selectedColor;
+    addToCartItem(product, `${selColor} / ${selSize}`, qty);
     renderCartDrawer('drawer-items-2', 'drawer-total-2');
     updateCartCount();
     // animate from main product image
@@ -835,7 +940,9 @@ function renderCheckoutSummary() {
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const postal = document.getElementById('checkout-postal')?.value || '';
-  const shippingCost = calculateShippingCost(postal);
+  let shippingCost = calculateShippingCost(postal);
+  const shipMethod = document.getElementById('shipping-method')?.value || 'standard';
+  if (shipMethod === 'express') shippingCost = +(shippingCost * 1.6).toFixed(2);
   orderRows.innerHTML = `
     ${cart
       .map((item) => `<div class="order-row"><span>${item.name}</span><span>${formatCurrency(item.price * item.quantity)}</span></div>`)
@@ -859,7 +966,6 @@ function setupCheckoutPage() {
   const dialog = document.getElementById('order-dialog');
   const continueButton = document.getElementById('continue-shopping');
   const postalInput = document.getElementById('checkout-postal');
-
   deliveryRadios.forEach((radio) => {
     radio.addEventListener('change', () => {
       if (radio.value === 'pickup' && radio.checked) {
@@ -870,8 +976,12 @@ function setupCheckoutPage() {
         shippingPanel?.classList.remove('hidden');
         pickupPanel?.classList.add('hidden');
       }
+      renderCheckoutSummary();
     });
   });
+
+  postalInput?.addEventListener('input', renderCheckoutSummary);
+  document.getElementById('shipping-method')?.addEventListener('change', renderCheckoutSummary);
 
   stores.forEach((card) => {
     card.addEventListener('click', () => {
@@ -886,7 +996,9 @@ function setupCheckoutPage() {
     const deliveryMethod = document.querySelector('input[name="delivery"]:checked')?.value || 'pickup';
     const selectedStore = document.querySelector('#checkout-stores .store-card.selected')?.textContent || 'Central Store';
     const postal = document.getElementById('checkout-postal')?.value || '';
-    const shippingCost = deliveryMethod === 'pickup' ? 0 : calculateShippingCost(postal);
+    let shippingCost = deliveryMethod === 'pickup' ? 0 : calculateShippingCost(postal);
+    const shipMethod = document.getElementById('shipping-method')?.value || 'standard';
+    if (shipMethod === 'express') shippingCost = +(shippingCost * 1.6).toFixed(2);
 
     // Payment fields
     const cardNumber = document.getElementById('card-number')?.value || '';

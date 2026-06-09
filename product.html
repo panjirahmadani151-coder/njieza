@@ -48,6 +48,10 @@
               <button class="thumbnail" data-color="black">Jet Black</button>
               <button class="thumbnail" data-color="steel">Charcoal</button>
             </div>
+            <div class="product-gallery">
+              <div class="gallery-main"><img id="gallery-main-image" src="" alt=""></div>
+              <div class="gallery-thumbs" id="gallery-thumbs"></div>
+            </div>
           </div>
 
           <div class="product-details">
@@ -74,6 +78,15 @@
                   <button class="size-chip unavailable" disabled data-size="XL">XL</button>
                 </div>
               </div>
+              <div class="variant-row">
+                <label>Size
+                  <select id="variant-size"><option>Standard</option><option>S</option><option>M</option><option>L</option></select>
+                </label>
+                <label>Color
+                  <select id="variant-color"><option>Default</option></select>
+                </label>
+              </div>
+              <label>Qty <input type="number" id="p-qty" value="1" min="1" style="width:64px" /></label>
             </div>
 
             <div class="action-row">
