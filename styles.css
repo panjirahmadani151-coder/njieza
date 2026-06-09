@@ -30,9 +30,12 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: Inter, Roboto, Helvetica Neue, Arial, sans-serif;
   color: var(--text);
-  background: var(--white);
+  background: radial-gradient(circle at top left, rgba(230, 0, 18, 0.09), transparent 26%),
+              radial-gradient(circle at bottom right, rgba(17, 17, 17, 0.08), transparent 22%),
+              #f7f7f7;
   line-height: 1.5;
 }
 
@@ -56,11 +59,13 @@ button {
 }
 
 .site-header {
-  border-bottom: 1px solid var(--gray-200);
-  background: var(--white);
+  border-bottom: 1px solid rgba(34, 34, 34, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 12px 36px rgba(17, 17, 17, 0.05);
 }
 
 .header-inner {
@@ -219,11 +224,13 @@ button {
   padding: 16px 24px;
   border-radius: var(--radius-md);
   min-width: 140px;
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
 }
 
 .button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.08);
 }
 
 .button-primary {
@@ -251,13 +258,61 @@ button {
 .product-image,
 .qr-placeholder {
   height: 220px;
-  background: var(--gray-100);
-  color: var(--gray-400);
+  background: linear-gradient(180deg, #f8f8f8 0%, #ffffff 100%);
+  color: var(--gray-500);
   display: grid;
   place-items: center;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   font-weight: 700;
+}
+
+.hero-image-frame {
+  width: min(320px, 100%);
+  padding: var(--space-l);
+  border: 1px solid rgba(17, 17, 17, 0.07);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 20px 40px rgba(17, 17, 17, 0.06);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.95rem;
+  color: var(--gray-500);
+}
+
+.section-head {
+  display: grid;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-l);
+}
+
+.main-nav a:hover,
+.button-secondary:hover,
+.button-ghost:hover {
+  color: var(--red);
+  border-color: rgba(230, 0, 18, 0.2);
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 4px rgba(230, 0, 18, 0.12);
+}
+
+.collection-card,
+.product-card,
+.editorial-card,
+.store-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.collection-card:hover,
+.product-card:hover,
+.editorial-card:hover,
+.store-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 26px 55px rgba(0, 0, 0, 0.08);
 }
 
 .hero-card,
@@ -296,6 +351,7 @@ button {
 .product-card {
   display: flex;
   flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .product-card-body {
@@ -343,8 +399,8 @@ button {
 }
 
 .site-footer {
-  border-top: 1px solid var(--gray-200);
-  background: var(--white);
+  border-top: 1px solid rgba(34, 34, 34, 0.08);
+  background: linear-gradient(180deg, rgba(248, 248, 248, 0.95), rgba(255, 255, 255, 0.96));
 }
 
 .footer-grid {
