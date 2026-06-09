@@ -419,6 +419,50 @@ function bindGlobalSearch() {
   });
 }
 
+function bindSearchSuggestions() {
+  const inputs = document.querySelectorAll('.search-inline input, .search-bar-panel input, #shop-search');
+  inputs.forEach((input) => {
+    const container = input.parentElement;
+    if (!container) return;
+    let list = container.querySelector('.suggestions-list');
+    if (!list) {
+      list = document.createElement('div');
+      list.className = 'suggestions-list hidden';
+      container.appendChild(list);
+    }
+
+    input.addEventListener('input', () => {
+      const q = (input.value || '').trim().toLowerCase();
+      if (!q) {
+        list.classList.add('hidden');
+        list.innerHTML = '';
+        return;
+      }
+      const matches = getCatalog().filter((p) => p.name.toLowerCase().includes(q) || (p.badge || '').toLowerCase().includes(q));
+      if (!matches.length) {
+        list.classList.add('hidden');
+        list.innerHTML = '';
+        return;
+      }
+      list.innerHTML = matches.slice(0, 8).map((p) => `<button class="suggestion-item" data-id="${p.id}">${p.name} · ${p.badge || ''}</button>`).join('');
+      list.classList.remove('hidden');
+      list.querySelectorAll('.suggestion-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          if (!id) return;
+          window.location.href = `product.html?id=${id}`;
+        });
+      });
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        list.classList.add('hidden');
+      }
+    });
+  });
+}
+
 function renderAccountPage() {
   const page = document.getElementById('account-page');
   if (!page) return;
@@ -928,6 +972,7 @@ function init() {
   setupCartFromStorage();
   setupStoreCards();
   bindGlobalSearch();
+  bindSearchSuggestions();
   setupShopPage();
   renderAccountPage();
   setupAdminPage();
