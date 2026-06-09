@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout — Njieza</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="header-inner">
+          <a class="logo" href="index.html">njieza</a>
+          <nav class="main-nav" aria-label="Primary navigation">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="account.html">Account</a>
+            <a href="admin.html">Admin</a>
+          </nav>
+          <div class="header-actions">
+            <button class="icon-button search-toggle" type="button" aria-label="Open search">🔍</button>
+            <a class="icon-button" href="#" aria-label="Wishlist">♡</a>
+            <button class="icon-button cart-button" type="button" aria-label="Open cart">🛒 <span class="cart-count" id="cart-count-3">0</span></button>
+          </div>
+        </div>
+        <div class="search-bar-panel hidden" id="search-panel-3">
+          <input type="search" placeholder="Search by fabric, collection, or product" aria-label="Search products" />
+          <div class="search-suggestions">
+            <button type="button">AIRism</button>
+            <button type="button">Thermal</button>
+            <button type="button">Basics</button>
+            <button type="button">Lounge</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="checkout-page">
+        <section class="checkout-hero">
+          <div class="checkout-progress">
+            <span class="step active">1</span>
+            <span class="progress-line"></span>
+            <span class="step active">2</span>
+            <span class="progress-line"></span>
+            <span class="step">3</span>
+            <span class="progress-line"></span>
+            <span class="step">4</span>
+          </div>
+          <div class="progress-labels">
+            <span>Cart</span>
+            <span>Pickup</span>
+            <span>Payment</span>
+            <span>Review</span>
+          </div>
+        </section>
+
+        <section class="checkout-grid">
+          <div class="checkout-panel">
+            <div class="checkout-card">
+              <h2>1. Delivery option</h2>
+              <div class="radio-group">
+                <label><input type="radio" name="delivery" value="shipping" />Ship to address</label>
+                <label><input type="radio" name="delivery" value="pickup" checked />Click & Collect</label>
+              </div>
+              <div class="delivery-panel" id="pickup-panel">
+                <label>
+                  Postal code
+                  <input type="text" id="checkout-postal" placeholder="e.g. 12345" />
+                </label>
+                <div class="store-list" id="checkout-stores">
+                  <article class="store-card selected" data-store="Central">Central Store • In stock</article>
+                  <article class="store-card" data-store="North">North Avenue • 2 available</article>
+                  <article class="store-card" data-store="South">South Gate • 1 available</article>
+                </div>
+              </div>
+              <div class="delivery-panel hidden" id="shipping-panel">
+                <label>
+                  Full name
+                  <input type="text" id="shipping-name" placeholder="Jane Doe" />
+                </label>
+                <label>
+                  Address
+                  <input type="text" id="shipping-address" placeholder="123 Main St" />
+                </label>
+                <label>
+                  City
+                  <input type="text" id="shipping-city" placeholder="City" />
+                </label>
+              </div>
+            </div>
+
+            <div class="checkout-card">
+              <h2>2. Payment</h2>
+              <label>
+                Card number
+                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" />
+              </label>
+              <div class="form-row">
+                <label>
+                  Expiry
+                  <input type="text" id="card-expiry" placeholder="MM/YY" />
+                </label>
+                <label>
+                  CVC
+                  <input type="text" id="card-cvc" placeholder="123" />
+                </label>
+              </div>
+            </div>
+
+            <div class="checkout-card">
+              <h2>3. Review order</h2>
+              <div class="order-summary">
+                <div class="order-row"><span>Men’s Cooling T-Shirt</span><span>$29</span></div>
+                <div class="order-row"><span>Pickup handling</span><span>$0</span></div>
+                <div class="order-row total"><strong>Total</strong><strong>$29</strong></div>
+              </div>
+              <button class="button button-primary" id="place-order">Place order</button>
+            </div>
+          </div>
+
+          <aside class="sidebar-card">
+            <h2>Your cart</h2>
+            <div class="checkout-cart-summary" id="checkout-cart-summary">
+              <div class="checkout-item">
+                <span>Men’s Cooling T-Shirt</span>
+                <strong>$29</strong>
+              </div>
+            </div>
+            <div class="sidebar-note">
+              <h3>Pickup information</h3>
+              <p>Reserve online and collect in-store during opening hours.</p>
+            </div>
+          </aside>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-grid">
+          <div>
+            <h3>Njieza</h3>
+            <p>Clean, functional clothing for everyday life.</p>
+          </div>
+          <div>
+            <p><strong>Shop</strong></p>
+            <a href="#">Men</a>
+            <a href="#">Women</a>
+            <a href="#">Collections</a>
+          </div>
+          <div>
+            <p><strong>Support</strong></p>
+            <a href="#">Size Guide</a>
+            <a href="#">Orders</a>
+            <a href="#">Stores</a>
+          </div>
+        </div>
+      </footer>
+
+      <div class="order-dialog hidden" id="order-dialog">
+        <div class="order-dialog-card">
+          <h2>Order confirmed</h2>
+          <p>Your Click & Collect order is ready to be picked up at Central Store.</p>
+          <p><strong>Order #NJZ-1904</strong></p>
+          <button class="button button-secondary" id="continue-shopping">Continue shopping</button>
+        </div>
+      </div>
+
+      <div class="mini-cart-drawer hidden" id="mini-cart-3">
+        <div class="drawer-header">
+          <h2>Your cart</h2>
+          <button class="icon-button drawer-close" type="button" aria-label="Close cart">✕</button>
+        </div>
+        <div class="drawer-content" id="drawer-items-3">
+          <p class="drawer-empty">Your cart is empty.</p>
+        </div>
+        <div class="drawer-footer">
+          <div class="drawer-total">
+            <span>Subtotal</span>
+            <strong id="drawer-total-3">$0.00</strong>
+          </div>
+          <a class="button button-primary" href="checkout.html">Checkout</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

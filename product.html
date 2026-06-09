@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Men’s Cooling T-Shirt — Njieza</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="header-inner">
+          <a class="logo" href="index.html">njieza</a>
+          <nav class="main-nav" aria-label="Primary navigation">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="account.html">Account</a>
+            <a href="admin.html">Admin</a>
+          </nav>
+          <div class="header-actions">
+            <button class="icon-button search-toggle" type="button" aria-label="Open search">🔍</button>
+            <a class="icon-button" href="#" aria-label="Wishlist">♡</a>
+            <button class="icon-button cart-button" type="button" aria-label="Open cart">🛒 <span class="cart-count" id="cart-count-2">0</span></button>
+          </div>
+        </div>
+        <div class="search-bar-panel hidden" id="search-panel-2">
+          <input type="search" placeholder="Search by fabric, collection, or product" aria-label="Search products" />
+          <div class="search-suggestions">
+            <button type="button">AIRism</button>
+            <button type="button">Thermal</button>
+            <button type="button">Basics</button>
+            <button type="button">Lounge</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="product-page">
+        <section class="product-hero">
+          <div class="product-media">
+            <div class="product-image" id="product-image">Cooling color</div>
+            <div class="thumbnail-row">
+              <button class="thumbnail selected" data-color="cooling">Cool White</button>
+              <button class="thumbnail" data-color="black">Jet Black</button>
+              <button class="thumbnail" data-color="steel">Charcoal</button>
+            </div>
+          </div>
+
+          <div class="product-details">
+            <p class="eyebrow">Men • Tops • Cooling Tech</p>
+            <h1>Men’s Cooling T-Shirt</h1>
+            <p class="product-price">$29</p>
+            <p class="product-description">Soft stretch jersey with advanced airflow and moisture management for everyday comfort.</p>
+
+            <div class="variant-group">
+              <div class="variant-block">
+                <span class="variant-label">Color</span>
+                <div class="swatch-row" id="color-swatches">
+                  <button class="swatch selected" data-color="cooling" aria-label="Cool White"></button>
+                  <button class="swatch" data-color="black" aria-label="Jet Black"></button>
+                  <button class="swatch" data-color="steel" aria-label="Charcoal"></button>
+                </div>
+              </div>
+              <div class="variant-block">
+                <span class="variant-label">Size</span>
+                <div class="size-row" id="size-options">
+                  <button class="size-chip" data-size="S">S</button>
+                  <button class="size-chip" data-size="M">M</button>
+                  <button class="size-chip" data-size="L">L</button>
+                  <button class="size-chip unavailable" disabled data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="button button-primary" id="add-to-cart">Add to Bag</button>
+              <button class="button button-secondary">Save for Later</button>
+            </div>
+            <div class="badge-strip">
+              <span class="badge">Cooling Tech</span>
+              <span class="badge">Breathable</span>
+              <span class="badge">Anti-Odor</span>
+            </div>
+
+            <div class="info-card">
+              <h2>Find Your Size</h2>
+              <p>Answer three quick questions to get the best fit recommendation.</p>
+              <div class="size-assistant" id="size-assistant">
+                <label>
+                  Height (cm)
+                  <input type="number" id="height-input" min="140" max="210" placeholder="e.g. 178" />
+                </label>
+                <label>
+                  Weight (kg)
+                  <input type="number" id="weight-input" min="40" max="120" placeholder="e.g. 72" />
+                </label>
+                <label>
+                  Fit preference
+                  <select id="fit-input">
+                    <option value="perfect">Perfect</option>
+                    <option value="tight">Tight</option>
+                    <option value="loose">Loose</option>
+                  </select>
+                </label>
+                <button class="button button-ghost" id="size-submit">Recommend</button>
+                <div class="recommendation hidden" id="size-recommendation">
+                  <p><strong>Recommended size:</strong> <span id="recommended-size">M</span></p>
+                  <p class="micro">Based on your inputs, this size supports a balanced fit with the cooling fabric.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="style-with-section">
+          <div class="section-head">
+            <p class="section-eyebrow">Complete the look</p>
+            <h2>Style it with</h2>
+          </div>
+          <div class="recommendation-carousel">
+            <article class="recommendation-card">
+              <div class="recommendation-image">Lounge Pant</div>
+              <p>Relaxed lounge pants</p>
+              <span>$38</span>
+            </article>
+            <article class="recommendation-card">
+              <div class="recommendation-image">Light Jacket</div>
+              <p>Windbreaker jacket</p>
+              <span>$69</span>
+            </article>
+            <article class="recommendation-card">
+              <div class="recommendation-image">Socks</div>
+              <p>Breathable socks</p>
+              <span>$10</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="details-section">
+          <div class="details-grid">
+            <div class="details-card">
+              <h3>Product details</h3>
+              <ul>
+                <li>96% polyester, 4% elastane</li>
+                <li>Lightweight cooling knit</li>
+                <li>Regular fit</li>
+                <li>Machine wash cold</li>
+              </ul>
+            </div>
+            <div class="details-card">
+              <h3>Fabric technology</h3>
+              <p>Advanced cooling fibers move moisture away and release heat for long-lasting comfort.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="reviews-section">
+          <div class="section-head">
+            <p class="section-eyebrow">Reviews</p>
+            <h2>What customers say</h2>
+          </div>
+          <div class="review-card">
+            <p class="review-rating">★★★★☆</p>
+            <p class="review-copy">“Light, comfortable, and perfect for warm weather. The fit is just right.”</p>
+            <p class="review-meta">Height: 180cm • Weight: 75kg • Size: M</p>
+          </div>
+          <div class="review-card">
+            <p class="review-rating">★★★★★</p>
+            <p class="review-copy">“The fabric is very breathable and soft. Great for everyday wear.”</p>
+            <p class="review-meta">Height: 165cm • Weight: 63kg • Size: S</p>
+          </div>
+        </section>
+
+        <section class="availability-section">
+          <div class="availability-panel">
+            <h2>Click & Collect</h2>
+            <p>Check stock and reserve your size at a nearby store.</p>
+            <label>
+              Postal code
+              <input type="text" id="pickup-postal" placeholder="e.g. 12345" />
+            </label>
+            <div class="store-list" id="store-list">
+              <article class="store-card selected" data-store="Central">Central Store • In stock</article>
+              <article class="store-card" data-store="North">North Avenue • 2 available</article>
+              <article class="store-card" data-store="South">South Gate • 1 available</article>
+            </div>
+          </div>
+          <div class="membership-card">
+            <h3>Member benefits</h3>
+            <p>Scan your membership QR in store to earn points and unlock re-orders.</p>
+            <div class="qr-placeholder">QR</div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-grid">
+          <div>
+            <h3>Njieza</h3>
+            <p>Clean, functional clothing for everyday life.</p>
+          </div>
+          <div>
+            <p><strong>Shop</strong></p>
+            <a href="#">Men</a>
+            <a href="#">Women</a>
+            <a href="#">Collections</a>
+          </div>
+          <div>
+            <p><strong>Support</strong></p>
+            <a href="#">Size Guide</a>
+            <a href="#">Orders</a>
+            <a href="#">Stores</a>
+          </div>
+        </div>
+      </footer>
+
+      <div class="mini-cart-drawer hidden" id="mini-cart-2">
+        <div class="drawer-header">
+          <h2>Your cart</h2>
+          <button class="icon-button drawer-close" type="button" aria-label="Close cart">✕</button>
+        </div>
+        <div class="drawer-content" id="drawer-items-2">
+          <p class="drawer-empty">Your cart is empty.</p>
+        </div>
+        <div class="drawer-footer">
+          <div class="drawer-total">
+            <span>Subtotal</span>
+            <strong id="drawer-total-2">$0.00</strong>
+          </div>
+          <a class="button button-primary" href="checkout.html">Checkout</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

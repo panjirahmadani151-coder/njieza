@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Njieza — Modern Minimal Clothing</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="header-inner">
+          <a class="logo" href="index.html">njieza</a>
+          <nav class="main-nav" aria-label="Primary navigation">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="account.html">Account</a>
+            <a href="admin.html">Admin</a>
+          </nav>
+          <div class="header-actions">
+            <button class="icon-button search-toggle" type="button" aria-label="Open search">🔍</button>
+            <a class="icon-button" href="#" aria-label="Wishlist">♡</a>
+            <button class="icon-button cart-button" type="button" aria-label="Open cart">🛒 <span class="cart-count" id="cart-count">0</span></button>
+          </div>
+        </div>
+        <div class="search-bar-panel hidden" id="search-panel">
+          <input type="search" placeholder="Search by fabric, collection, or product" aria-label="Search products" />
+          <div class="search-suggestions">
+            <button type="button">AIRism</button>
+            <button type="button">Thermal</button>
+            <button type="button">Basics</button>
+            <button type="button">Loungewear</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero-section">
+          <div class="hero-copy">
+            <span class="eyebrow">Everyday comfort, defined</span>
+            <h1>Minimal wardrobe, purposeful pieces.</h1>
+            <p>Discover modern staples designed for everyday life, engineered with cooling, thermal, and breathable fabrics.</p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="product.html">Shop Cooling Tech</a>
+              <a class="button button-secondary" href="#collections">Explore Essentials</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="hero-image hero-image-large">
+              <div class="hero-image-frame">cooling tee</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="search-hub">
+          <p class="search-hub-copy">Find the right fit in fewer steps. Search by fabric, style, or collection.</p>
+          <div class="chips-row">
+            <button type="button">AIRism</button>
+            <button type="button">HEATTECH</button>
+            <button type="button">Basics</button>
+            <button type="button">Lounge</button>
+          </div>
+        </section>
+
+        <section class="collections-section" id="collections">
+          <div class="section-head">
+            <p class="section-eyebrow">Featured collections</p>
+            <h2>Designed for daily use.</h2>
+          </div>
+          <div class="collection-grid">
+            <article class="collection-card">
+              <div class="collection-image">cooling</div>
+              <h3>Cooling Tech</h3>
+              <p>Lightweight performance for warm days.</p>
+            </article>
+            <article class="collection-card">
+              <div class="collection-image">thermal</div>
+              <h3>Thermal Layer</h3>
+              <p>Heat retention with smooth comfort.</p>
+            </article>
+            <article class="collection-card">
+              <div class="collection-image">basics</div>
+              <h3>Everyday Essentials</h3>
+              <p>Clean silhouettes for work and home.</p>
+            </article>
+            <article class="collection-card">
+              <div class="collection-image">graphic</div>
+              <h3>Graphic Tees</h3>
+              <p>Modern prints with soft cotton.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="product-preview-section" id="men">
+          <div class="section-head">
+            <p class="section-eyebrow">New arrivals</p>
+            <h2>Shop men’s essentials</h2>
+          </div>
+          <div class="product-grid">
+            <article class="product-card">
+              <div class="product-card-image">Cooling Tee</div>
+              <div class="product-card-body">
+                <span>Men’s Cooling T-Shirt</span>
+                <strong>$29</strong>
+                <span class="badge">Cooling Tech</span>
+                <a href="product.html" class="button button-ghost">View</a>
+              </div>
+            </article>
+            <article class="product-card">
+              <div class="product-card-image">Lounge</div>
+              <div class="product-card-body">
+                <span>Relaxed Lounge Pants</span>
+                <strong>$38</strong>
+                <span class="badge">Lounge</span>
+                <a href="product.html" class="button button-ghost">View</a>
+              </div>
+            </article>
+            <article class="product-card">
+              <div class="product-card-image">Thermal</div>
+              <div class="product-card-body">
+                <span>Thermal Crewneck</span>
+                <strong>$34</strong>
+                <span class="badge">Thermal</span>
+                <a href="product.html" class="button button-ghost">View</a>
+              </div>
+            </article>
+            <article class="product-card">
+              <div class="product-card-image">UT</div>
+              <div class="product-card-body">
+                <span>Graphic UT Tee</span>
+                <strong>$24</strong>
+                <span class="badge">Everyday</span>
+                <a href="product.html" class="button button-ghost">View</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="editorial-panel">
+          <div class="editorial-card">
+            <h3>Daily essentials</h3>
+            <p>Curated pieces that keep your wardrobe clean, comfortable, and versatile.</p>
+          </div>
+          <div class="editorial-card">
+            <h3>Everyday function</h3>
+            <p>Fabric technology grounded in everyday needs: cooling, thermal, and breathable performance.</p>
+          </div>
+        </section>
+
+        <section class="pickup-banner">
+          <div>
+            <p class="eyebrow">Click & Collect</p>
+            <h2>Check stock at your local store.</h2>
+            <p>Reserve items online and pick them up for free at the nearest location.</p>
+          </div>
+          <a class="button button-primary" href="checkout.html">Find a store</a>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-grid">
+          <div>
+            <h3>Njieza</h3>
+            <p>Clean, functional clothing for everyday life.</p>
+          </div>
+          <div>
+            <p><strong>Shop</strong></p>
+            <a href="#">Men</a>
+            <a href="#">Women</a>
+            <a href="#">Collections</a>
+          </div>
+          <div>
+            <p><strong>Support</strong></p>
+            <a href="#">Size Guide</a>
+            <a href="#">Orders</a>
+            <a href="#">Stores</a>
+          </div>
+        </div>
+      </footer>
+
+      <div class="mini-cart-drawer hidden" id="mini-cart">
+        <div class="drawer-header">
+          <h2>Your cart</h2>
+          <button class="icon-button drawer-close" type="button" aria-label="Close cart">✕</button>
+        </div>
+        <div class="drawer-content" id="drawer-items">
+          <p class="drawer-empty">Your cart is empty.</p>
+        </div>
+        <div class="drawer-footer">
+          <div class="drawer-total">
+            <span>Subtotal</span>
+            <strong id="drawer-total">$0.00</strong>
+          </div>
+          <a class="button button-primary" href="checkout.html">Checkout</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
