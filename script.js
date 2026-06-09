@@ -116,6 +116,16 @@ function setCustomProducts(products) {
   setStorage(customProductsKey, products);
 }
 
+const defaultShippingRates = { nearby: 3.0, regional: 6.0, long: 12.0, remote: 20.0 };
+
+function getShippingRates() {
+  return getStorage('njieza-shipping-rates', defaultShippingRates);
+}
+
+function setShippingRates(rates) {
+  setStorage('njieza-shipping-rates', rates);
+}
+
 function isAdminAuthenticated() {
   return localStorage.getItem(adminAuthKey) === 'true';
 }
@@ -258,15 +268,18 @@ function processPaymentMock(cardNumber, expiry, cvc, name) {
 }
 
 function calculateShippingCost(postal) {
-  // Simple zone-based shipping by postal prefix distance from store (10000)
+  // Zone-based shipping using admin-configurable rates
+  const rates = getShippingRates();
   const storePrefix = 100;
-  const prefix = parseInt((postal || '').toString().replace(/\D/g, '').slice(0, 3) || '0', 10);
+  const digits = (postal || '').toString().replace(/\D/g, '');
+  if (!digits) return rates.remote;
+  const prefix = parseInt(digits.slice(0, 3) || '0', 10);
   const diff = Math.abs(prefix - storePrefix);
-  if (isNaN(prefix)) return 8.0;
-  if (diff <= 10) return 3.0; // nearby
-  if (diff <= 50) return 6.0; // regional
-  if (diff <= 150) return 12.0; // long
-  return 20.0; // remote
+  if (isNaN(prefix)) return rates.remote;
+  if (diff <= 10) return Number(rates.nearby);
+  if (diff <= 50) return Number(rates.regional);
+  if (diff <= 150) return Number(rates.long);
+  return Number(rates.remote);
 }
 
 function generateTrackingNumber() {
@@ -557,6 +570,21 @@ function setupAdminPage() {
     loginPanel.classList.add('hidden');
     dashboard.classList.remove('hidden');
     renderAdminDashboard();
+    // populate shipping rate inputs if present
+    const rates = getShippingRates();
+    document.getElementById('rate-nearby') && (document.getElementById('rate-nearby').value = rates.nearby);
+    document.getElementById('rate-regional') && (document.getElementById('rate-regional').value = rates.regional);
+    document.getElementById('rate-long') && (document.getElementById('rate-long').value = rates.long);
+    document.getElementById('rate-remote') && (document.getElementById('rate-remote').value = rates.remote);
+    document.getElementById('save-shipping-rates')?.addEventListener('click', () => {
+      const nearby = parseFloat(document.getElementById('rate-nearby')?.value) || rates.nearby;
+      const regional = parseFloat(document.getElementById('rate-regional')?.value) || rates.regional;
+      const long = parseFloat(document.getElementById('rate-long')?.value) || rates.long;
+      const remote = parseFloat(document.getElementById('rate-remote')?.value) || rates.remote;
+      setShippingRates({ nearby, regional, long, remote });
+      renderAdminDashboard();
+      alert('Shipping rates saved');
+    });
   }
 
   if (isAdminAuthenticated()) {
