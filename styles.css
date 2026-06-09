@@ -285,6 +285,43 @@ img.product-image {
   display: block;
 }
 
+.product-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-m);
+  border-radius: var(--radius-md);
+  padding: var(--space-m);
+  background: var(--white);
+  box-shadow: 0 8px 20px rgba(17,17,17,0.05);
+}
+
+.product-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-card, .table-row.order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-s);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #fff, #fbfbfb);
+  box-shadow: 0 6px 18px rgba(17,17,17,0.04);
+  margin-bottom: var(--space-s);
+}
+
+.timeline {
+  margin-top: var(--space-m);
+  border-left: 2px solid rgba(0,0,0,0.06);
+  padding-left: var(--space-m);
+}
+.timeline-row { display:flex; justify-content:space-between; padding:6px 0; }
+
+.track-form { display:flex; gap:12px; align-items:center; margin-bottom:var(--space-l); }
+.track-result { margin-top: var(--space-m); }
+
 .hero-image-frame {
   width: min(320px, 100%);
   padding: var(--space-l);

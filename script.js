@@ -228,6 +228,51 @@ function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+function luhnCheck(num) {
+  const arr = (num + '').split('').reverse().map((x) => parseInt(x, 10));
+  const sum = arr.reduce((acc, val, idx) => {
+    if (idx % 2 === 1) {
+      const dbl = val * 2;
+      return acc + (dbl > 9 ? dbl - 9 : dbl);
+    }
+    return acc + val;
+  }, 0);
+  return sum % 10 === 0;
+}
+
+function detectCardBrand(number) {
+  if (/^4/.test(number)) return 'Visa';
+  if (/^5[1-5]/.test(number) || /^2(2[2-9]|[3-6]|7[01])/.test(number)) return 'Mastercard';
+  if (/^3[47]/.test(number)) return 'AMEX';
+  return 'Card';
+}
+
+function processPaymentMock(cardNumber, expiry, cvc, name) {
+  const digits = (cardNumber || '').replace(/\s+/g, '');
+  if (!/^[0-9]{13,19}$/.test(digits) || !luhnCheck(digits)) {
+    return { success: false, error: 'Invalid card number' };
+  }
+  if (!/^[0-9]{3,4}$/.test((cvc || '').trim())) return { success: false, error: 'Invalid CVC' };
+  const brand = detectCardBrand(digits);
+  return { success: true, last4: digits.slice(-4), brand };
+}
+
+function calculateShippingCost(postal) {
+  // Simple zone-based shipping by postal prefix distance from store (10000)
+  const storePrefix = 100;
+  const prefix = parseInt((postal || '').toString().replace(/\D/g, '').slice(0, 3) || '0', 10);
+  const diff = Math.abs(prefix - storePrefix);
+  if (isNaN(prefix)) return 8.0;
+  if (diff <= 10) return 3.0; // nearby
+  if (diff <= 50) return 6.0; // regional
+  if (diff <= 150) return 12.0; // long
+  return 20.0; // remote
+}
+
+function generateTrackingNumber() {
+  return 'NJZ' + Math.random().toString(36).substring(2, 9).toUpperCase();
+}
+
 function renderShopPage() {
   const container = document.getElementById('shop-products');
   if (!container) return;
@@ -322,7 +367,18 @@ function renderAccountPage() {
   orderHistory.innerHTML = orders.length
     ? orders
         .map(
-          (order) => `<div class="history-card"><div><strong>${order.id}</strong><p>${order.store} • ${order.status}</p></div><div><span>${formatCurrency(order.total)}</span><button class="button button-ghost reorder-button" data-id="${order.id}">Reorder</button></div></div>`
+          (order) => `
+            <div class="history-card">
+              <div>
+                <strong>${order.id}</strong>
+                <p>${order.delivery?.method === 'pickup' ? order.delivery.store : order.delivery?.postal} • ${order.status}</p>
+                <p>Tracking: <a href="track.html?tracking=${order.tracking}">${order.tracking}</a></p>
+              </div>
+              <div>
+                <span>${formatCurrency(order.total)}</span>
+                <button class="button button-ghost reorder-button" data-id="${order.id}">Reorder</button>
+              </div>
+            </div>`
         )
         .join('')
     : '<p class="empty-state">No purchases yet.</p>';
@@ -392,11 +448,14 @@ function renderAdminDashboard() {
           <div class="table-row order-row">
             <div>
               <strong>${order.id}</strong>
-              <p>${order.store}</p>
+              <p>Tracking: ${order.tracking}</p>
+              <p>${order.delivery?.method === 'pickup' ? order.delivery.store : order.delivery?.postal}</p>
             </div>
             <div>${order.status}</div>
             <div>${formatCurrency(order.total)}</div>
-            <button class="button button-secondary order-action" data-id="${order.id}">${order.status === 'Pending' ? 'Mark shipped' : 'Delivered'}</button>
+            <div>
+              <button class="button button-secondary order-action" data-id="${order.id}">Advance status</button>
+            </div>
           </div>`
         )
         .join('')
@@ -433,10 +492,55 @@ function renderAdminDashboard() {
       const orders = getOrders();
       const order = orders.find((item) => item.id === orderId);
       if (!order) return;
-      order.status = order.status === 'Pending' ? 'Delivered' : order.status;
-      setOrders(orders);
-      renderAdminDashboard();
+      const sequence = ['Processing', 'Shipped', 'In Transit', 'Out for Delivery', 'Delivered'];
+      const currentIdx = sequence.indexOf(order.status);
+      const nextStatus = sequence[Math.min(sequence.length - 1, currentIdx + 1)];
+      if (nextStatus && nextStatus !== order.status) {
+        order.status = nextStatus;
+        order.timeline = order.timeline || [];
+        order.timeline.push({ status: nextStatus, date: new Date().toLocaleString() });
+        setOrders(orders);
+        renderAdminDashboard();
+      }
     });
+  });
+}
+
+function setupTrackingPage() {
+  const hasTrack = Boolean(document.getElementById('track-page'));
+  if (!hasTrack) return;
+
+  const trackingInput = document.getElementById('track-input');
+  const trackButton = document.getElementById('track-button');
+  const resultArea = document.getElementById('track-result');
+
+  function renderTrack(tracking) {
+    const orders = getOrders();
+    const order = orders.find((o) => o.tracking === tracking || o.id === tracking);
+    if (!order) {
+      resultArea.innerHTML = '<p class="empty-state">Order not found.</p>';
+      return;
+    }
+    resultArea.innerHTML = `
+      <h3>${order.id}</h3>
+      <p>Status: <strong>${order.status}</strong></p>
+      <p>Tracking: <strong>${order.tracking}</strong></p>
+      <p>Total: <strong>${formatCurrency(order.total)}</strong></p>
+      <div class="timeline">
+        ${((order.timeline || [])
+          .map((t) => `<div class="timeline-row"><span>${t.date}</span><span>${t.status}</span></div>`)
+          .join(''))}
+      </div>
+    `;
+  }
+
+  const preset = getQueryParam('tracking') || getQueryParam('id');
+  if (preset) renderTrack(preset);
+
+  trackButton?.addEventListener('click', () => {
+    const val = trackingInput?.value?.trim();
+    if (!val) return;
+    renderTrack(val);
   });
 }
 
@@ -592,14 +696,17 @@ function renderCheckoutSummary() {
     .join('');
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const postal = document.getElementById('checkout-postal')?.value || '';
+  const shippingCost = calculateShippingCost(postal);
   orderRows.innerHTML = `
     ${cart
       .map((item) => `<div class="order-row"><span>${item.name}</span><span>${formatCurrency(item.price * item.quantity)}</span></div>`)
       .join('')}
-    <div class="order-row"><span>Pickup handling</span><span>$0.00</span></div>
-    <div class="order-row total"><strong>Total</strong><strong>${formatCurrency(subtotal)}</strong></div>
+    <div class="order-row"><span>Shipping</span><span id="checkout-shipping-row">${formatCurrency(shippingCost)}</span></div>
+    <div class="order-row total"><strong>Total</strong><strong>${formatCurrency(subtotal + shippingCost)}</strong></div>
   `;
-  totalContainer.textContent = formatCurrency(subtotal);
+  document.getElementById('checkout-shipping') && (document.getElementById('checkout-shipping').textContent = formatCurrency(shippingCost));
+  totalContainer.textContent = formatCurrency(subtotal + shippingCost);
 }
 
 function setupCheckoutPage() {
@@ -638,17 +745,53 @@ function setupCheckoutPage() {
   placeOrder?.addEventListener('click', () => {
     const cart = getCart();
     if (!cart.length) return;
+    const deliveryMethod = document.querySelector('input[name="delivery"]:checked')?.value || 'pickup';
     const selectedStore = document.querySelector('#checkout-stores .store-card.selected')?.textContent || 'Central Store';
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const postal = document.getElementById('checkout-postal')?.value || '';
+    const shippingCost = deliveryMethod === 'pickup' ? 0 : calculateShippingCost(postal);
+
+    // Payment fields
+    const cardNumber = document.getElementById('card-number')?.value || '';
+    const cardExpiry = document.getElementById('card-expiry')?.value || '';
+    const cardCvc = document.getElementById('card-cvc')?.value || '';
+    const payerName = document.getElementById('shipping-name')?.value || 'Guest';
+
+    const pay = processPaymentMock(cardNumber, cardExpiry, cardCvc, payerName);
+    if (!pay.success) {
+      alert('Payment failed: ' + (pay.error || 'Unknown'));
+      return;
+    }
+
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const total = subtotal + shippingCost;
     const orderId = `NJZ-${Date.now()}`;
+    const tracking = generateTrackingNumber();
     const orders = getOrders();
-    orders.unshift({ id: orderId, items: cart, total, status: 'Pending', store: selectedStore, created: new Date().toLocaleDateString() });
+    const order = {
+      id: orderId,
+      items: cart,
+      subtotal,
+      shipping: shippingCost,
+      total,
+      status: 'Processing',
+      tracking,
+      payment: { last4: pay.last4, brand: pay.brand, method: 'card' },
+      delivery: { method: deliveryMethod, store: selectedStore, postal },
+      timeline: [{ status: 'Processing', date: new Date().toLocaleString() }],
+      created: new Date().toLocaleString()
+    };
+    orders.unshift(order);
     setOrders(orders);
     setCart([]);
     updateCartCount();
     renderCartDrawer('drawer-items-3', 'drawer-total-3');
     renderCheckoutSummary();
+    // show dialog with tracking
     dialog?.classList.remove('hidden');
+    const dialogCard = document.querySelector('#order-dialog .order-dialog-card');
+    if (dialogCard) {
+      dialogCard.innerHTML = `<h2>Order confirmed</h2><p>Your order <strong>${order.id}</strong> is placed.</p><p>Tracking: <strong>${tracking}</strong></p><p>Total: <strong>${formatCurrency(total)}</strong></p><a class="button button-primary" href="track.html?tracking=${tracking}">Track order</a> <button class="button button-secondary" id="continue-shopping">Continue shopping</button>`;
+    }
   });
 
   continueButton?.addEventListener('click', () => {
@@ -695,6 +838,7 @@ function init() {
   setupAdminPage();
   setupProductPage();
   setupCheckoutPage();
+  setupTrackingPage();
 }
 
 window.addEventListener('DOMContentLoaded', init);
